@@ -1,0 +1,8 @@
+xmltodict
+requests
+pandas
+pymysql
+python-dotenv
+fastapi
+uvicorn[standard]
+numpy
