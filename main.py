@@ -7,6 +7,15 @@ from fastapi import FastAPI
 import requests
 import xmltodict, json
 import pandas as pd
+from dotenv import load_dotenv
+import os
+
+BASEDIR = os.path.dirname(os.path.abspath(__file__))
+ENV_VARS = os.path.join(BASEDIR, ".env")
+# se cargan las variables de entorno
+load_dotenv(ENV_VARS)
+########################
+host_api = os.environ.get('ip_api')
 
 
 
@@ -36,7 +45,7 @@ def read_item(id: int, q: Optional[str] = None):
         return json_tabla
 
     r = requests.get(
-        f'http://10.175.3.126/Atcom/ws_Letrero/WSLetrerov2.asmx/Data?IDEjecucion=Edu2060Letrero&Planta={id}')
+        f'http://{host_api}/Atcom/ws_Letrero/WSLetrerov2.asmx/Data?IDEjecucion=Edu2060Letrero&Planta={id}')
 
     obj = xmltodict.parse(r.text)  # <class 'collections.OrderedDict'>
     salida = json.dumps(obj)
