@@ -44,8 +44,10 @@ def read_item(id: int, q: Optional[str] = None):
         json_tabla = tabla_camiones.to_json(orient='columns')
         return json_tabla
 
-    r = requests.get(
-        f'http://{host_api}/Atcom/ws_Letrero/WSLetrerov2.asmx/Data?IDEjecucion=Edu2060Letrero&Planta={id}')
+    consulta=f'http://{host_api}/Atcom/ws_Letrero/WSLetrerov2.asmx/Data?IDEjecucion=Edu2060Letrero&Planta={id}'
+    print(consulta)
+
+    r = requests.get(consulta)
 
     obj = xmltodict.parse(r.text)  # <class 'collections.OrderedDict'>
     salida = json.dumps(obj)
@@ -107,12 +109,15 @@ def read_item(id: int, q: Optional[str] = None):
 
     ##solo deberia entrar si existen camiones
     if datos:
-
         salida_dict_4 = salida_dict_3['DocumentElement']
         salida_dict_5 = salida_dict_4['TablaLetrero']
         num_camiones = len(salida_dict_5)
         lista_camiones = []
+        print("+"*100)
         print(salida_dict_5)
+        print("-"*100)
+        print(f"numero de camionbes {num_camiones}")
+        #TODO el error se produce cuando el numero de camiones es ugual o mayor a 5
 
         # print(f"variable {num_camiones}  ,planta {planta}")
         if num_camiones > 10 and datos:  ##el largo es 37 ya que como es solo un camion, lo pasa a una lista, es del tipo <class 'collections.OrderedDict'>
@@ -126,6 +131,16 @@ def read_item(id: int, q: Optional[str] = None):
             lista_camiones = salida_dict_5
 
         elif num_camiones == 4 and datos:
+            # print("tiene 4 camiones")
+            lista_camiones = salida_dict_5
+
+        elif num_camiones == 5 and datos:
+            # print("tiene 4 camiones")
+            lista_camiones = salida_dict_5
+        elif num_camiones == 6 and datos:
+            # print("tiene 4 camiones")
+            lista_camiones = salida_dict_5
+        elif num_camiones == 7 and datos:
             # print("tiene 4 camiones")
             lista_camiones = salida_dict_5
         elif not datos:
