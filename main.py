@@ -143,6 +143,12 @@ def read_item(id: int, q: Optional[str] = None):
         elif num_camiones == 7 and datos:
             # print("tiene 4 camiones")
             lista_camiones = salida_dict_5
+        elif num_camiones == 8 and datos:
+            # print("tiene 4 camiones")
+            lista_camiones = salida_dict_5
+        elif num_camiones == 9 and datos:
+            # print("tiene 4 camiones")
+            lista_camiones = salida_dict_5
         elif not datos:
             # print("sin camiones")
             lista_camiones = []
