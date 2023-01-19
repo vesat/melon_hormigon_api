@@ -3,6 +3,6 @@ requests
 pandas
 pymysql
 python-dotenv
-fastapi
+fastapi[all]
 uvicorn[standard]
 numpy

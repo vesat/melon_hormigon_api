@@ -1,4 +1,4 @@
-
+import datetime
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -30,7 +30,7 @@ def read_root():
 def read_item(id: int, q: Optional[str] = None):
     print(f" la planta solicitada es {id}")
 
-    lista_plantas=[121,122,123,124,131,132,133]
+    lista_plantas=[121,122,123,124,131,132,133,101,111] #101 maipu, 111 peñaflor
 
     ##la planta solicitada no existe
     if id not in lista_plantas:
@@ -38,7 +38,7 @@ def read_item(id: int, q: Optional[str] = None):
             "camiones": ["0"],
             "hora": [""],
             "hora_cam": ["0"],
-            "estado": ["2"]
+            "estado": 8
         }
         tabla_camiones = pd.DataFrame(camiones)
         json_tabla = tabla_camiones.to_json(orient='columns')
@@ -80,7 +80,7 @@ def read_item(id: int, q: Optional[str] = None):
                     "camiones": ["0"],
                     "hora": [""],
                     "hora_cam": ["0"],
-                    "estado": ["3"]
+                    "estado": 5
                 }
                 tabla_camiones = pd.DataFrame(camiones)
                 json_tabla = tabla_camiones.to_json(orient='columns')
@@ -161,18 +161,38 @@ def read_item(id: int, q: Optional[str] = None):
         df = pd.DataFrame(lista_camiones)
         df.sort_values(by = '@diffgr:id',inplace=True)
 
+        ##se crea un camion "falso 0
         camiones = {
             "camiones": ["0"],
             "hora": [""],
             "hora_cam": ["0"],
-            "estado": ["5"]
+            "estado": 5
         }
         tabla_camiones = pd.DataFrame(camiones)
 
         ##un datafram completo
         for index, row  in df.iterrows():
             print(f"---{row['CODIGO_CAMION']}----")
-            tabla_camiones = tabla_camiones.append({f'camiones': row['CODIGO_CAMION'], 'hora_cam':row['HORA_IMPRESO_GUIA'],'hora': '4', 'estado': '5'}, ignore_index=True)
+            #me interesa enviar el tiempo que lleva el camion en cola, no la hora que fue emitida la guia
+            ahora=datetime.datetime.now()
+            ingreso=row['HORA_IMPRESO_GUIA']
+            from dateutil import parser
+            yourdate = parser.parse(ingreso)
+            #ingreso_dt=datetime.datetime.strptime(ingreso,"%Y-%m-%dT%H:%M:%S.%f")
+            diferencia=datetime.datetime.timestamp(ahora)-datetime.datetime.timestamp(yourdate)
+            print(f" la direncia es {diferencia}")
+            td = datetime.timedelta(seconds=diferencia//1)#diferencia en formato hh:mm:ss
+            estado=5
+            #estado, si el camion lleva mas de 15 min(1500 seg), se debe poner rojo(estado1), estado=5 para negro y estado=2 para verde
+            if diferencia>900:
+                estado=1
+
+            print(td)
+
+            #tabla_camiones = tabla_camiones.append({f'camiones': row['CODIGO_CAMION'], 'hora_cam':row['HORA_IMPRESO_GUIA'],'hora': '4', 'estado': '5'}, ignore_index=True)
+            tabla_camiones = tabla_camiones.append(
+                {f'camiones': row['CODIGO_CAMION'], 'hora_cam': str(td), 'hora': '4', 'estado':estado},
+                ignore_index=True)
         print(tabla_camiones)
         json_tabla = tabla_camiones.to_json(orient='columns')
         print("envia con camionex")
